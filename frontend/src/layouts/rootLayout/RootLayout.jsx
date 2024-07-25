@@ -1,5 +1,10 @@
 import { Link, Outlet } from "react-router-dom";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
 import "./rootLayout.css";
 
 const RootLayout = () => {
@@ -9,14 +14,13 @@ const RootLayout = () => {
         <Link to="/" className="logo">
           <img src="/logo.png" alt="MERN AI Logo" />
           <span>MERN AI</span>
-              </Link>
-              
-              <div className="user">
-              
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-              </div>
+        </Link>
+
+        <div className="user">
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+        </div>
       </header>
 
       <main>
