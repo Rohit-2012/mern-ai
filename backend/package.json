@@ -11,9 +11,11 @@
   "author": "Rohit Kirti",
   "license": "ISC",
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.0.18",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "imagekit": "^5.0.1",
+    "mongoose": "^8.5.1",
     "nodemon": "^3.1.4"
   }
 }
