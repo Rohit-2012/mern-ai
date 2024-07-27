@@ -1,22 +1,59 @@
 import "./chatPage.css";
 import NewPrompt from "../../components/newPrompt/NewPrompt";
+import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
+import Markdown from "react-markdown";
+import { IKImage } from "imagekitio-react";
 
 const ChatPage = () => {
+  const path = useLocation().pathname;
+  const chatId = path.split("/").pop();
 
+  const { isPending, error, data } = useQuery({
+    queryKey: ["chat", chatId],
+    queryFn: async () => {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/chats/${chatId}`,
+        {
+          credentials: "include",
+        }
+      );
+      return response.json();
+    },
+  });
 
   return (
     <div className="chatPage">
       <div className="wrapper">
         <div className="chat">
-          <div className="message">Test Message from ai Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus commodi temporibus provident nobis eaque odit. Minus provident facilis sapiente obcaecati consequuntur et incidunt velit mollitia odit doloribus nihil eius quia fugit illum tempore rem alias, corrupti quos. Odit quia, suscipit quos sunt pariatur expedita autem maiores saepe sapiente repellat perferendis!</div>
-          <div className="message user">Test Message from user Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo, labore nulla asperiores vitae tempore culpa aut excepturi sapiente pariatur vel harum repellendus eaque, officiis architecto itaque ex commodi cupiditate nemo enim fugit nesciunt! Blanditiis nihil adipisci sed voluptatem nulla nemo dolor fugiat consectetur aliquid. Unde magnam ratione in itaque praesentium.</div>
-          <div className="message">Test Message from ai Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus commodi temporibus provident nobis eaque odit. Minus provident facilis sapiente obcaecati consequuntur et incidunt velit mollitia odit doloribus nihil eius quia fugit illum tempore rem alias, corrupti quos. Odit quia, suscipit quos sunt pariatur expedita autem maiores saepe sapiente repellat perferendis!</div>
-          <div className="message user">Test Message from user Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo, labore nulla asperiores vitae tempore culpa aut excepturi sapiente pariatur vel harum repellendus eaque, officiis architecto itaque ex commodi cupiditate nemo enim fugit nesciunt! Blanditiis nihil adipisci sed voluptatem nulla nemo dolor fugiat consectetur aliquid. Unde magnam ratione in itaque praesentium.</div>
-          <div className="message">Test Message from ai Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus commodi temporibus provident nobis eaque odit. Minus provident facilis sapiente obcaecati consequuntur et incidunt velit mollitia odit doloribus nihil eius quia fugit illum tempore rem alias, corrupti quos. Odit quia, suscipit quos sunt pariatur expedita autem maiores saepe sapiente repellat perferendis!</div>
-          <div className="message user">Test Message from user Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo, labore nulla asperiores vitae tempore culpa aut excepturi sapiente pariatur vel harum repellendus eaque, officiis architecto itaque ex commodi cupiditate nemo enim fugit nesciunt! Blanditiis nihil adipisci sed voluptatem nulla nemo dolor fugiat consectetur aliquid. Unde magnam ratione in itaque praesentium.</div>
-          <div className="message">Test Message from ai Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus commodi temporibus provident nobis eaque odit. Minus provident facilis sapiente obcaecati consequuntur et incidunt velit mollitia odit doloribus nihil eius quia fugit illum tempore rem alias, corrupti quos. Odit quia, suscipit quos sunt pariatur expedita autem maiores saepe sapiente repellat perferendis!</div>
-          <div className="message user">Test Message from user Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo, labore nulla asperiores vitae tempore culpa aut excepturi sapiente pariatur vel harum repellendus eaque, officiis architecto itaque ex commodi cupiditate nemo enim fugit nesciunt! Blanditiis nihil adipisci sed voluptatem nulla nemo dolor fugiat consectetur aliquid. Unde magnam ratione in itaque praesentium.</div>
-          
+          {isPending
+            ? "Loading..."
+            : error
+            ? "Something went wrong"
+            : data?.history?.map((message, index) => (
+                <>
+                  {message.img && (
+                    <IKImage
+                      urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
+                      path={message.img}
+                      height="300"
+                    width="400"
+                    transformation={[{ height: 300, width: 400 }]}
+                    loading="lazy"
+                    lqip={{active: true, quality: 20}}
+                    />
+                  )}
+                  <div
+                    className={
+                      message.role === "user" ? "message user" : "message"
+                    }
+                    key={index}
+                  >
+                    <Markdown>{message.parts[0].text}</Markdown>
+                  </div>
+                </>
+              ))}
+
           <NewPrompt />
         </div>
       </div>
