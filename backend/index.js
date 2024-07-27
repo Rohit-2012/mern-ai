@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import ImageKit from "imagekit";
 import mongoose from "mongoose";
-import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import Chat from "./models/chat.model.js";
 import UserChats from "./models/userChats.model.js";
 
@@ -12,20 +12,20 @@ const app = express();
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
-    credentials: true
+    credentials: true,
   })
 );
 
-app.use(express.json())
+app.use(express.json());
 
 const connect = async () => {
   try {
-    await mongoose.connect(process.env.MONGO)
-    console.log("Connected to MongoDB")
+    await mongoose.connect(process.env.MONGO);
+    console.log("Connected to MongoDB");
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
 const imagekit = new ImageKit({
   urlEndpoint: process.env.IMAGE_KIT_ENDPOINT,
@@ -38,11 +38,9 @@ app.get("/api/upload", (req, res) => {
   res.send(result);
 });
 
-
-
 app.post("/api/chats", ClerkExpressRequireAuth(), async (req, res) => {
   const userId = req.auth.userId;
-  const {text } = req.body;
+  const { text } = req.body;
 
   try {
     // CREATE A NEW CHAT
@@ -91,14 +89,25 @@ app.post("/api/chats", ClerkExpressRequireAuth(), async (req, res) => {
   }
 });
 
+app.get("/api/userchats", ClerkExpressRequireAuth(), async (req, res) => {
+  const userId = req.auth.userId;
 
+  try {
+    const userChats = await UserChats.find({ userId });
+
+    res.status(200).send(userChats[0].chats);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error fetch userchats!");
+  }
+});
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(401).send('Unauthenticated!');
+  res.status(401).send("Unauthenticated!");
 });
 
 app.listen(PORT, () => {
-  connect()
+  connect();
   console.log("Server running on PORT: ", PORT);
 });
