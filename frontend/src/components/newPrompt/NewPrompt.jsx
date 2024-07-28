@@ -18,14 +18,10 @@ const NewPrompt = ({ data }) => {
 
   const chat = model.startChat({
     history: [
-      {
-        role: "user",
-        parts: [{ text: "Hello, I jave 2 dogs in my house." }],
-      },
-      {
-        role: "model",
-        parts: [{ text: "Great to meet you. What would you like to know" }],
-      },
+      data?.history.map(({ role, parts }) => ({
+        role,
+        parts: [{ text: parts[0].text }],
+      })),
     ],
     generationConfig: {
       // maxOutputTokens: 100
@@ -77,9 +73,8 @@ const NewPrompt = ({ data }) => {
   });
 
   const add = async (text, isInitial) => {
+    if (!isInitial) setQuestion(text);
 
-    if(!isInitial) setQuestion(text);
-    
     try {
       const result = await chat.sendMessageStream(
         Object.entries(img.aiData).length ? [img.aiData, text] : [text]
@@ -105,16 +100,16 @@ const NewPrompt = ({ data }) => {
     add(text, false);
   };
 
-  const hasRun = useRef(false)
+  const hasRun = useRef(false);
 
   useEffect(() => {
-    if(!hasRun.current){
-    if (data?.history?.length === 1) {
-      add(data.history[0].parts[0].text, true)
+    if (!hasRun.current) {
+      if (data?.history?.length === 1) {
+        add(data.history[0].parts[0].text, true);
       }
     }
-    hasRun.current = true
-  }, [])
+    hasRun.current = true;
+  }, []);
 
   return (
     <>
