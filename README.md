@@ -2,6 +2,8 @@
 
 An AI-powered MERN stack web application utilizing Google Gemini for Q&A. Users can sign up, log in, ask questions, and upload images for AI analysis. All conversations are stored, allowing users to review past interactions.
 
+![App Screenshot](frontend/public/mern-ai-ss.PNG)
+
 ## Features
 
 - **User Authentication**: Log in or sign up using GitHub, Google, or email.
